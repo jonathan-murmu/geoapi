@@ -1,20 +1,17 @@
-import xlwt
 from django.conf import settings
 from django.contrib import messages
-from django.core import serializers
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.urls import reverse
 from django.views.generic import TemplateView
 
 from apps.location.forms import ImportForm
-from apps.location.models import Address
 from apps.location.utils import handle_file_upload, import_address_sheet, \
     get_address, get_headers, setup_workbook
 
 
 class LocationIndex(TemplateView):
+    """Render the index page for Location app."""
     template_name = "location/list_location.html"
 
     def get(self, request, *args, **kwargs):
@@ -50,8 +47,7 @@ class ImportAddress(TemplateView):
                 messages.error(request, "Something went wrong during file "
                                         "upload.")
             else:
-                import_response = import_address_sheet(
-                    request, path, file_name)
+                import_response = import_address_sheet(path, file_name)
                 if import_response['status']:
                     messages.success(request, import_response['message'])
                 else:
@@ -63,13 +59,14 @@ class ImportAddress(TemplateView):
 
 
 class ExportAddress(TemplateView):
-    """Export the mailing list."""
+    """Export the Address list."""
 
     def get(self, request, *args, **kwargs):
         counter = 0
         name = 'address-export'
         file_name = "{0}.xls".format(name)
 
+        # setup the excel sheet to download
         sheet_name = 'Address Export'
         workbook, worksheet, response = setup_workbook(file_name, sheet_name)
 

@@ -10,6 +10,7 @@ from apps.location.models import Country, State, City, Address
 
 
 def handle_file_upload(file_data):
+    """Utility to upload the address file."""
     file_name = file_data.name
     path = settings.MEDIA_ROOT + 'uploads/address_files/'
     try:
@@ -38,7 +39,7 @@ def cell_value(sheet, row_index, column_index):
         return ''
 
 
-def import_address_sheet(request, path, file_name):
+def import_address_sheet(path, file_name):
     """Import the sheet data into the database."""
     response = {'status': False, 'message': 'File did not upload'}
 
@@ -74,6 +75,7 @@ def import_address_sheet(request, path, file_name):
             location = ' '.join([address_1, address_2, pin_code, city, state,
                                  country])
 
+            # call the google api to get the latitude-longitude
             latitude, longitude = get_lat_long(location)
             data['latitude'] = latitude
             data['longitude'] = longitude
@@ -87,12 +89,14 @@ def import_address_sheet(request, path, file_name):
 
 
 def get_address():
+    """Get the addresses stored in the database."""
     return Address.objects.values(
         'address_line_1', 'address_line_2', 'pincode', 'latitude', 'longitude',
         'city__city', 'city__state__state', 'city__state__country__country')
 
 
 def get_headers():
+    """Get the file headers."""
     return [
         "Address Line 1", "Address Line 2", "Latitude", "Longitude", "Pin Code",
         "City", "State", "Country"
@@ -100,6 +104,7 @@ def get_headers():
 
 
 def setup_workbook(file_name,sheet_name):
+    """Setup the excel workbook for download."""
     # Setting up the response header
     response = HttpResponse(content_type="application/ms-excel")
     response['Content-Disposition'] = 'attachment; filename=%s' % (
