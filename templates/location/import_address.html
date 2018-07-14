@@ -1,0 +1,29 @@
+{% extends "location/location_base.html" %}
+{% load static %}
+{% block home-marquee %}
+    <div class="row">
+        <div class="col-sm">
+            <h3>Import An Excel Sheet.</h3>
+        </div>
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="col-sm-12">
+            <form action="." method="post" enctype="multipart/form-data"> {% csrf_token %}
+                <div class="form-group">
+                    {{ form.as_p }}
+                </div>
+
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </form>
+        </div>
+        <div class="col-sm-12">
+            <p class="help">
+                Please use <a
+                    href="{{ STATIC_MEDIA_SERVER }}/sample/address_import_sample.xls">
+                this </a>format to upload spreadsheet.<br/>
+            </p>
+        </div>
+    </div>
+
+{% endblock %}
